@@ -58,7 +58,7 @@ export default function Auth() {
               <Shield className="h-8 w-8 text-blue-600" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Tekshiruvchi tizimiga kirish</CardTitle>
+          <CardTitle className="text-2xl font-bold">Inspektor tizimiga kirish</CardTitle>
           <CardDescription>
             Kirish uchun login va parolingizni kiriting
           </CardDescription>
