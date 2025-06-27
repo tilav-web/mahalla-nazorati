@@ -1,0 +1,15 @@
+export const ENDPOINTS = {
+  LOGIN: "/accounts/auth/token/",
+  FIND_ME: "/accounts/profile/",
+  APARTMENTS_FIND_ALL: "/accounts/apartments/",
+  APARTMENTS_FIND_BY_ID: (id: string) => `/accounts/apartments/${id}/`,
+  CITIZENS_FIND_ALL: "/accounts/citizns/",
+  CITIZENS_FIND_BY_ID: (id: string) => `/accounts/citizns/${id}`,
+  SERVICES_FIND_ALL: "/accounts/services/",
+  SERVICES_LIST: "/services/",
+  SERVICES_CREATE: "/services/",
+  SERVICES_READ: (id: string) => `/services/${id}/`,
+  SERVICES_UPDATE: (id: string) => `/services/${id}/`,
+  SERVICES_PARTIAL_UPDATE: (id: string) => `/services/${id}/`,
+  SERVICES_DELETE: (id: string) => `/services/${id}/`,
+};
