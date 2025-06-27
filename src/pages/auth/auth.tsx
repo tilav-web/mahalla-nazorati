@@ -58,30 +58,30 @@ export default function Auth() {
               <Shield className="h-8 w-8 text-blue-600" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Inspector Login</CardTitle>
+          <CardTitle className="text-2xl font-bold">Tekshiruvchi tizimiga kirish</CardTitle>
           <CardDescription>
-            Enter your credentials to access the inspection system
+            Kirish uchun login va parolingizni kiriting
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Foydalanuvchi nomi</Label>
               <Input
                 onChange={(e) => setUsername(e.target.value)}
                 id="username"
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Foydalanuvchi nomini kiriting"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Parol</Label>
               <Input
                 onChange={(e) => setPassword(e.target.value)}
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Parolingizni kiriting"
                 required
               />
             </div>
@@ -106,7 +106,7 @@ export default function Auth() {
               href="#"
               className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
             >
-              Forgot your password?
+              Parolingizni unutdingizmi?
             </a>
           </div>
         </CardContent>
