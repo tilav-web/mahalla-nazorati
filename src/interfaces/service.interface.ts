@@ -1,6 +1,7 @@
 export interface IServiceCategory {
   id: number;
   title: string;
+  name: string;
 }
 
 export interface IServiceDetail {

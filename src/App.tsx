@@ -8,6 +8,7 @@ import { authService } from "./services/auth.service";
 import { useUserStore } from "./store/user/user.store";
 import Apartments from "./pages/apartments/apartments";
 import Citizens from "./pages/citizens/citizens";
+import ServicesPage from "./pages/services/services";
 
 export default function App() {
   const { login, logout } = useUserStore();
@@ -51,6 +52,14 @@ export default function App() {
           element: (
             <PrivateRoute roles={["inspector"]}>
               <Citizens />
+            </PrivateRoute>
+          ),
+        },
+        {
+          path: "/services",
+          element: (
+            <PrivateRoute roles={["inspector"]}>
+              <ServicesPage />
             </PrivateRoute>
           ),
         },

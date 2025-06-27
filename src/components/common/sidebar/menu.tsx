@@ -1,5 +1,5 @@
 import type { Roles } from "@/private/private-route";
-import { Hotel, House, Users } from "lucide-react";
+import { Hotel, House, Users, Wrench } from "lucide-react";
 
 export const menu = [
   {
@@ -22,6 +22,12 @@ export const menu = [
         icon: Users,
         url: "/citizens",
         name: "Fuqorolar",
+        roles: ["inspector"] as Roles[],
+      },
+      {
+        icon: Wrench,
+        url: "/services",
+        name: "Xizmatlar",
         roles: ["inspector"] as Roles[],
       },
     ],

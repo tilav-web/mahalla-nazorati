@@ -39,6 +39,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import type { IVillage } from "@/interfaces/location/village.interface";
 
 type PaginatedResponse = {
   count: number;
@@ -51,27 +55,134 @@ type PaginatedResponse = {
 
 export default function ApartmentTable() {
   const [data, setData] = useState<PaginatedResponse>();
+  const [form, setForm] = useState<{ name: string; village: string; area: number }>({ name: "", village: "", area: 0 });
+  const [villages, setVillages] = useState<IVillage[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const fetchApartments = async () => {
+    try {
+      const data = await apartmentService.findAll();
+      setData(data);
+    } catch { /* ignore */ }
+  };
+
+  const fetchVillages = async () => {
+    try {
+      const res = await apartmentService.getVillages();
+      setVillages(res.results || res);
+    } catch { /* ignore */ }
+  };
 
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await apartmentService.findAll();
-        setData(data);
-      } catch (error) {
-        console.error(error);
-      }
-    })();
+    fetchApartments();
+    fetchVillages();
   }, []);
+
+  const openCreateDialog = () => {
+    setForm({ name: "", village: "", area: 0 });
+    setEditId(null);
+    setDialogOpen(true);
+  };
+
+  const openEditDialog = (apartment: IApartment) => {
+    setForm({ name: apartment.name, village: apartment.village.id, area: apartment.area });
+    setEditId(apartment.id.toString());
+    setDialogOpen(true);
+  };
+
+  const closeDialog = () => {
+    setForm({ name: "", village: "", area: 0 });
+    setEditId(null);
+    setDialogOpen(false);
+  };
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleVillageChange = (value: string) => {
+    setForm({ ...form, village: value });
+  };
+
+  const handleCreateOrUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editId) {
+        await apartmentService.findByIdAndUpdate({ id: editId, ...form, area: Number(form.area) });
+      } else {
+        await apartmentService.insertOne({ ...form, area: Number(form.area) });
+      }
+      closeDialog();
+      fetchApartments();
+    } catch { /* ignore */ }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await apartmentService.findByIdAndDelete(deleteId);
+      setDeleteId(null);
+      fetchApartments();
+    } catch { /* ignore */ }
+  };
 
   return (
     <Card className="w-full">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Xonadorlar ro'yhati</CardTitle>
-          <Button className="cursor-pointer">
-            <Plus />
-            Q'shish
-          </Button>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="cursor-pointer" onClick={openCreateDialog}>
+                <Plus /> Q'shish
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{editId ? "Xonadonni tahrirlash" : "Yangi xonadon qo'shish"}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleCreateOrUpdate} className="flex flex-col gap-4">
+                <Label htmlFor="name">Xonadon nomi</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={form.name}
+                  onChange={handleFormChange}
+                  placeholder="Xonadon nomi"
+                  required
+                />
+                <Label htmlFor="village">Mahalla</Label>
+                <Select value={form.village} onValueChange={handleVillageChange}>
+                  <SelectTrigger id="village">
+                    <SelectValue placeholder="Mahalla tanlang" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {villages.map((v) => (
+                      <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Label htmlFor="area">Maydoni (m²)</Label>
+                <Input
+                  id="area"
+                  name="area"
+                  type="number"
+                  value={form.area}
+                  onChange={handleFormChange}
+                  placeholder="Maydon"
+                  required
+                />
+                <DialogFooter>
+                  <Button type="submit">{editId ? "Saqlash" : "Qo'shish"}</Button>
+                  <DialogClose asChild>
+                    <Button type="button" variant="outline" onClick={closeDialog}>Bekor qilish</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
         <CardDescription>
           <div className="flex items-center space-x-2">
@@ -110,12 +221,12 @@ export default function ApartmentTable() {
                   <TableCell>{apartment.area} m²</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end space-x-2">
-                      <Button variant="outline" size="sm" className="cursor-pointer">
+                      <Button variant="outline" size="sm" className="cursor-pointer" onClick={() => openEditDialog(apartment)}>
                         <Edit className="h-4 w-4" />
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="cursor-pointer">
+                          <Button variant="outline" size="sm" className="cursor-pointer" onClick={() => setDeleteId(apartment.id.toString())}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </AlertDialogTrigger>
@@ -123,15 +234,15 @@ export default function ApartmentTable() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Aminmisiz</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Bu amalni ortga qaytarib bo‘lmaydi. "
+                              Bu amalni ortga qaytarib bo'lmaydi. "
                               {apartment.name}" ni butunlay yo'q qilish.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel className="cursor-pointer">
+                            <AlertDialogCancel className="cursor-pointer" onClick={() => setDeleteId(null)}>
                               Bekor qilish
                             </AlertDialogCancel>
-                            <AlertDialogAction className="bg-red-500 hover:bg-red-600 cursor-pointer">
+                            <AlertDialogAction className="bg-red-500 hover:bg-red-600 cursor-pointer" onClick={handleDelete}>
                               O'chirish
                             </AlertDialogAction>
                           </AlertDialogFooter>

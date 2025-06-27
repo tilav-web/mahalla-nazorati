@@ -1,6 +1,6 @@
 import { privateInstance } from "@/common/api/client-api";
 import { ENDPOINTS } from "@/common/api/endpoints";
-import type { IService, IServicePaginatedResponse } from "@/interfaces/service.interface";
+import type { IService, IServicePaginatedResponse, IServiceCategory } from "@/interfaces/service.interface";
 
 class ServiceService {
   async list(params?: Record<string, unknown>): Promise<IServicePaginatedResponse> {
@@ -8,7 +8,8 @@ class ServiceService {
     return res.data;
   }
 
-  async create(data: Partial<IService>): Promise<IService> {
+  // @ts-expect-error: FormData is required for file upload
+  async create(data: FormData | Partial<IService>): Promise<IService> {
     const res = await privateInstance.post(ENDPOINTS.SERVICES_CREATE, data);
     return res.data;
   }
@@ -18,7 +19,8 @@ class ServiceService {
     return res.data;
   }
 
-  async update(id: string, data: Partial<IService>): Promise<IService> {
+  // @ts-expect-error: FormData is required for file upload
+  async update(id: string, data: FormData | Partial<IService>): Promise<IService> {
     const res = await privateInstance.put(ENDPOINTS.SERVICES_UPDATE(id), data);
     return res.data;
   }
@@ -30,6 +32,11 @@ class ServiceService {
 
   async delete(id: string): Promise<void> {
     await privateInstance.delete(ENDPOINTS.SERVICES_DELETE(id));
+  }
+
+  async getCategories(): Promise<IServiceCategory[]> {
+    const res = await privateInstance.get("/accounts/service-categories/");
+    return res.data;
   }
 }
 

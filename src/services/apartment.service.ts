@@ -80,6 +80,16 @@ class ApartmentService {
       throw error;
     }
   }
+
+  async getVillages() {
+    try {
+      const res = await privateInstance.get(ENDPOINTS.VILLAGES_FIND_ALL);
+      return res.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 }
 
 export const apartmentService = new ApartmentService();
